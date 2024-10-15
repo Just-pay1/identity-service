@@ -8,12 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const user = require('../models/user');
-const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const user_1 = __importDefault(require("../models/user"));
+exports.createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id, name, email, password, phone } = req.body;
-        const newUser = yield user.create({ id, name, email, password, phone });
+        const newUser = yield user_1.default.create({ id, name, email, password, phone });
         res.status(200).json({ message: 'User created successfully', newUser });
     }
     catch (error) {

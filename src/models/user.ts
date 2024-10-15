@@ -1,12 +1,12 @@
 import { Model, DataTypes } from 'sequelize';
-import sequelize from '../database';
+import sequelize from '../database/database';
 
 class User extends Model {
     public id!: number;
     public name!: string;
     public email!: string;
     public password!: string;
-    public phone!: number;
+    public phone!: string;
 }
 
 User.init(
@@ -30,13 +30,14 @@ User.init(
             allowNull: false,
         },
         phone: {
-            type: DataTypes.NUMBER,
+            type: DataTypes.STRING,
             allowNull: false,
         },
     },
     {
         sequelize,
         modelName: 'User',
+        timestamps: true
     }
 );
 

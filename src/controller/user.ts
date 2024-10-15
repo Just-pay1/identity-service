@@ -1,19 +1,19 @@
 import { Request, Response } from 'express';
-const user = require('../models/user');
+import User from '../models/user';
 
 interface Iuser {
     id: number,
     name: string,
     email: string,
     password: string,
-    phone: number
+    phone: string
 }
 
-const createUser = async (req: Request, res: Response) => {
+exports.createUser = async (req: Request, res: Response) => {
     try {
         const { id, name, email, password, phone }: Iuser = req.body as Iuser;
 
-        const newUser = await user.create({ id, name, email, password, phone });
+        const newUser = await User.create({ id, name, email, password, phone });
 
         res.status(200).json({ message: 'User created successfully', newUser });
     } catch (error: any) {
