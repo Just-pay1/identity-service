@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import User from '../models/user';
 
-interface Iuser {
+interface user {
     id: number,
     name: string,
     email: string,
@@ -11,7 +11,7 @@ interface Iuser {
 
 exports.createUser = async (req: Request, res: Response) => {
     try {
-        const { id, name, email, password, phone }: Iuser = req.body as Iuser;
+        const { id, name, email, password, phone }: user = req.body as user;
 
         const newUser = await User.create({ id, name, email, password, phone });
 
