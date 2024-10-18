@@ -1,6 +1,10 @@
 import { request, Request, Response } from 'express';
+<<<<<<< Updated upstream
 import User from '../models/user';
 const crypto = require('crypto');
+=======
+import User from '../models/userModules';
+>>>>>>> Stashed changes
 
 exports.createCard = (req: Request, res: Response) => {
     const IIN:string = "400000" // Issuer Identification Number

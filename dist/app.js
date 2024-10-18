@@ -9,9 +9,11 @@ const bodyParser = require('body-parser');
 const database_1 = __importDefault(require("./database/database"));
 const PORT = process.env.PORT || 3000;
 const userRoute = require('./routes/user');
+const cardRoute = require('./routes/card');
 app.use(bodyParser.json());
 app.use(express_1.default.json());
 app.use('/user', userRoute);
+app.use('/cards', cardRoute);
 database_1.default.sync()
     .then(() => {
     app.listen(PORT, () => {
