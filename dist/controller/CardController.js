@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const crypto = require('crypto');
 exports.createCard = (req, res) => {
-    const IIN = "400000";
+    const IIN = "400000"; // Issuer Identification Number
     // var user_id:any = user.id
     var user_id = req.body.user_id;
-    console.log(user_id);
     var user_id = user_id.padStart(4, '0');
     let accountNumber = "";
     for (var i = 0; i < 5; i++) {
@@ -12,7 +12,11 @@ exports.createCard = (req, res) => {
     }
     const partialCardNumber = IIN + user_id + accountNumber;
     const checkDigit = calculateLuhnCheckDigit(partialCardNumber);
-    return res.send(partialCardNumber + checkDigit);
+    const cardNumber = partialCardNumber + checkDigit;
+    const expirationDate = generateExpirationDate();
+    console.log(expirationDate);
+    const cvc = generateCVC(cardNumber, expirationDate);
+    return res.status(200).json({ cardNumber: cardNumber, expirationDate: expirationDate, cvc: cvc });
 };
 const calculateLuhnCheckDigit = (number) => {
     let sum = 0;
@@ -30,4 +34,17 @@ const calculateLuhnCheckDigit = (number) => {
     }
     // The check digit is what makes the sum a multiple of 10
     return (sum * 9) % 10;
+};
+const generateExpirationDate = () => {
+    const now = new Date();
+    const expiryYear = (now.getFullYear() + 5).toString().slice(2);
+    const expiryMonth = (now.getMonth() + 1).toString().padStart(2, '0');
+    return `${expiryMonth}/${expiryYear}`;
+};
+const generateCVC = (cardNumber, expirationDate) => {
+    const inputString = cardNumber + expirationDate;
+    const hash = crypto.createHash('sha256').update(inputString).digest('hex');
+    const hashNumber = parseInt(hash.substring(0, 6), 16);
+    const cvc = hashNumber % 1000;
+    return cvc.toString().padStart(3, '0');
 };
