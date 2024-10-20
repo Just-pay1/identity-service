@@ -3,6 +3,7 @@ import User from '../models/userModel';
 import createUserSchema from '../models/userModel'
 import updateUserSchema from '../models/userModel'
 //import validator  from '../models/userModules';
+const bcrypt = require('bcrypt');
 interface Iuser {
     id: number,
     name: string,
@@ -14,8 +15,9 @@ interface Iuser {
 exports.createUser = async (req: Request, res: Response) => {
     try {
         const { id, name, email, password, phone }: Iuser = req.body as Iuser;
-
-        const newUser = await User.create({ id, name, email, password, phone });
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        const newUser = await User.create({ id, name, email, password: hashedPassword, phone });
 
         res.status(200).json({ message: 'User created successfully', newUser });
     } catch (error: any) {
