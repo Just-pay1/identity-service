@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
-import User from '../models/userModules';
-import validator  from '../models/userModules';
+import User from '../models/userModel';
+import createUserSchema from '../models/userModel'
+import updateUserSchema from '../models/userModel'
+//import validator  from '../models/userModules';
 interface Iuser {
     id: number,
     name: string,
@@ -11,16 +13,15 @@ interface Iuser {
 
 exports.createUser = async (req: Request, res: Response) => {
     try {
-        let valid = new validator(req.body);
-        if (!valid) {
-            return res.status(500).json({message : 'Validation error'})
-        }
         const { id, name, email, password, phone }: Iuser = req.body as Iuser;
 
         const newUser = await User.create({ id, name, email, password, phone });
 
         res.status(200).json({ message: 'User created successfully', newUser });
     } catch (error: any) {
+        if (error.isJoi === true) {
+            res.status(422).json({ message: 'validation error' })
+        }
         res.status(500).json({ message: error.message });
     }
 }
@@ -46,10 +47,6 @@ exports.getUserById = async (req: Request, res: Response) => {
 exports.updateUser = async (req: Request, res: Response) => {
     try {
         const userId = req.params.id;
-        let valid = new validator(req.body);
-        if (!valid) {
-            return res.status(500).json({message : 'Validation error'})
-        }
         const updatedData = req.body;
         const updatedUser = await User.update(updatedData, { where: { id: userId } });
 
@@ -69,6 +66,9 @@ exports.updateUser = async (req: Request, res: Response) => {
         }
 
     } catch (error: any) {
+        if (error.isJoi === true) {
+            error.status(422).json({ message: 'validation error' })
+        }
         res.status(500).json({ message: error.message });
     }
 }

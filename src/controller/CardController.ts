@@ -1,6 +1,6 @@
 import { request, Request, Response } from 'express';
 const crypto = require('crypto');
-import User from '../models/userModules';
+import User from '../models/userModel';
 
 exports.createCard = (req: Request, res: Response) => {
     const IIN:string = "400000" // Issuer Identification Number

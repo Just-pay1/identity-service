@@ -13,18 +13,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const userModules_1 = __importDefault(require("../models/userModules"));
-const userModules_2 = __importDefault(require("../models/userModules"));
 exports.createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let valid = new userModules_2.default(req.body);
-        if (!valid) {
-            return res.status(500).json({ message: 'Validation error' });
-        }
         const { id, name, email, password, phone } = req.body;
         const newUser = yield userModules_1.default.create({ id, name, email, password, phone });
         res.status(200).json({ message: 'User created successfully', newUser });
     }
     catch (error) {
+        if (error.isJoi === true) {
+            res.status(422).json({ message: 'validation error' });
+        }
         res.status(500).json({ message: error.message });
     }
 });
@@ -49,10 +47,6 @@ exports.getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.id;
-        let valid = new userModules_2.default(req.body);
-        if (!valid) {
-            return res.status(500).json({ message: 'Validation error' });
-        }
         const updatedData = req.body;
         const updatedUser = yield userModules_1.default.update(updatedData, { where: { id: userId } });
         if (updatedUser[0] === 0) {
@@ -68,6 +62,9 @@ exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
     }
     catch (error) {
+        if (error.isJoi === true) {
+            error.status(422).json({ message: 'validation error' });
+        }
         res.status(500).json({ message: error.message });
     }
 });
