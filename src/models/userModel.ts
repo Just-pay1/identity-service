@@ -1,5 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../database/database';
+import Card from './cardModel';
 class User extends Model {
     static validateAsync(body: any) {
         throw new Error('Method not implemented.');
@@ -44,4 +45,8 @@ User.init(
     }
 );
 
+User.hasMany(Card, {
+    foreignKey: 'user_id',
+})
 export default User;
+
