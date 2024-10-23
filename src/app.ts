@@ -2,6 +2,8 @@ import express from "express";
 const app = express();
 const bodyParser = require('body-parser');
 import sequelize from './database/database';
+import User from './models/userModel';
+import Card from './models/cardModel';
 const PORT = process.env.PORT || 3000;
 const userRoute =require('./routes/user')
 const cardRoute =require('./routes/card')
@@ -10,6 +12,10 @@ app.use(express.json());
 
 app.use('/user',userRoute);
 app.use('/cards',cardRoute);
+
+User.associate();
+Card.associate();
+
 sequelize.sync()
     .then(() => {
         app.listen(PORT, () => {

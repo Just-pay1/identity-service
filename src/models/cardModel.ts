@@ -18,6 +18,11 @@ class Card extends Model{
         delete attributes.card_number; // Example of hiding the card_number field
         return attributes;
     }
+
+
+    static associate() {
+        Card.belongsTo(User, { foreignKey: 'user_id' });
+    }
 }
 
 Card.init({
@@ -56,6 +61,5 @@ Card.init({
         timestamps: true
 })
 
-Card.belongsTo(User,{ foreignKey: 'userId' });
 
 export default Card;

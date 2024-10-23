@@ -10,6 +10,11 @@ class User extends Model {
     public email!: string;
     public password!: string;
     public phone!: string;
+
+    static associate() {
+        User.hasMany(Card, { foreignKey: 'user_id' });
+    }
+
 }
 
 
@@ -45,8 +50,6 @@ User.init(
     }
 );
 
-User.hasMany(Card, {
-    foreignKey: 'user_id',
-})
+
 export default User;
 
