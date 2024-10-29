@@ -1,6 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../database/database';
 import Card from './cardModel';
+const bcrypt = require('bcrypt');
 class User extends Model {
     static validateAsync(body: any) {
         throw new Error('Method not implemented.');
@@ -49,6 +50,10 @@ User.init(
         timestamps: true
     }
 );
+User.beforeCreate(async (user) => {
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+});
 
 
 export default User;
