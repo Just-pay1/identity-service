@@ -47,6 +47,7 @@ const generateExpirationDate = () : string => {
     const now = new Date()
     const expiryYear = (now.getFullYear() + 5).toString().slice(2);  
     const expiryMonth = (now.getMonth() + 1).toString().padStart(2, '0');
+    
     return `${expiryMonth}/${expiryYear}`;
 }
 

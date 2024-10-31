@@ -4,11 +4,16 @@ import { where } from 'sequelize';
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const Joi = require('joi');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 exports.register = async (req: Request, res: Response) => {
     try {
         const { name, email, password, phone } = req.body;
+        const unique = await isEmailUnique(email)
+        if (!unique) {
+            res.status(409).json({ error: 'This email address is already registered. Please use a different email or log in.' });
+        }
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({ name, email, phone, password });
         await user.save();
@@ -44,5 +49,12 @@ exports.login = async (req: Request, res: Response) => {
 
 const generateToken = (user : any) => {
     return jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '30m' });
+}
+
+const isEmailUnique = async(email : string) => {
+    const user = await User.findOne({ 
+        where: { email: email}
+    });
+    return !user;
 }
 
