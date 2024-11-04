@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post('/register',validate(createUserSchema), Auth.register)
 router.post('/login', validate(loginSchema),Auth.login)
+router.post('/refreshToken',Auth.refreshToken)
 
 router.get('/generate', (req, res) => {
     const crypto = require('crypto');
