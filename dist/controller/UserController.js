@@ -12,11 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const userModules_1 = __importDefault(require("../models/userModules"));
+const userModel_1 = __importDefault(require("../models/userModel"));
+//import validator  from '../models/userModules';
+const bcrypt = require('bcrypt');
 exports.createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id, name, email, password, phone } = req.body;
-        const newUser = yield userModules_1.default.create({ id, name, email, password, phone });
+        const { name, email, password, phone } = req.body;
+        const salt = yield bcrypt.genSalt(10);
+        const hashedPassword = yield bcrypt.hash(password, salt);
+        const newUser = yield userModel_1.default.create({ name, email, password: hashedPassword, phone });
         res.status(200).json({ message: 'User created successfully', newUser });
     }
     catch (error) {
@@ -28,7 +32,7 @@ exports.createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.getAllUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const allUsers = yield userModules_1.default.findAll();
+        const allUsers = yield userModel_1.default.findAll();
         res.status(200).json({ message: 'users retrieved successfully', allUsers });
     }
     catch (error) {
@@ -37,7 +41,7 @@ exports.getAllUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.getUserById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const UserById = yield userModules_1.default.findByPk(req.params.id);
+        const UserById = yield userModel_1.default.findByPk(req.params.id);
         res.status(200).json({ message: 'User retrieved successfully', UserById });
     }
     catch (error) {
@@ -48,11 +52,11 @@ exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const userId = req.params.id;
         const updatedData = req.body;
-        const updatedUser = yield userModules_1.default.update(updatedData, { where: { id: userId } });
+        const updatedUser = yield userModel_1.default.update(updatedData, { where: { id: userId } });
         if (updatedUser[0] === 0) {
             return res.status(404).json({ message: 'User not found' });
         }
-        const theNewUser = yield userModules_1.default.findOne({ where: { id: userId } });
+        const theNewUser = yield userModel_1.default.findOne({ where: { id: userId } });
         if (theNewUser) {
             console.log('Updated User Data:', theNewUser.get());
             res.status(200).json({ message: 'User updated successfully', theNewUser });
@@ -71,7 +75,7 @@ exports.updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 exports.deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.id;
-        const deletedUser = yield userModules_1.default.destroy({ where: { id: userId } });
+        const deletedUser = yield userModel_1.default.destroy({ where: { id: userId } });
         if (deletedUser === 0) {
             return res.status(404).json({ message: 'User not found' });
         }

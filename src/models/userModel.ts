@@ -43,6 +43,12 @@ User.init(
             type: DataTypes.STRING,
             allowNull: false,
         },
+        otp: {
+          type: DataTypes.STRING,
+        },
+        otp_expired_at: {
+          type: DataTypes.DATE,
+        },
     },
     {
         sequelize,
