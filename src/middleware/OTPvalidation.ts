@@ -13,7 +13,9 @@ exports.verifyOTP = async (req: Request, res: Response, next: NextFunction) => {
 
     user.otp = null;
     user.otp_expired_at = null;
-    return await user.save(); // this should be a middleware but it is the last function so i use return not next
+    await user.save(); 
+
+    res.status(200).json({ message: 'OTP verified successfully' });
 
   } catch (error) {
     res.status(500).json({ error: 'verification failed' });

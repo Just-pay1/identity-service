@@ -15,20 +15,17 @@ exports.verifyOTP = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     try {
         const user = yield User.findOne({ where: { email } });
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(401).json({ error: 'no user with this email' });
         }
-        if (user.otp !== otp) {
-            return res.status(400).json({ error: 'Invalid OTP' });
-        }
-        if (new Date() > user.otp_expired_at) {
-            return res.status(400).json({ error: 'OTP has expired' });
+        if (!user || user.otp !== otp || new Date() > user.otp_expired_at) {
+            return res.status(401).json({ error: 'verification failed' });
         }
         user.otp = null;
         user.otp_expired_at = null;
         yield user.save();
-        next();
+        res.status(200).json({ message: 'OTP verified successfully' });
     }
     catch (error) {
-        res.status(500).json({ error: 'OTP verification failed' });
+        res.status(500).json({ error: 'verification failed' });
     }
 });

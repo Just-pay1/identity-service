@@ -6,7 +6,8 @@ const verify = require('../middleware/OTPvalidation');
 const router = express.Router();
 
 
-router.post('/register',validate(createUserSchema), Auth.register,verify.verifyOTP)
+router.post('/register',validate(createUserSchema), Auth.register)
+router.post('/verfiy-otp',verify.verifyOTP);
 router.post('/login', validate(loginSchema),Auth.login)
 
 router.get('/generate', (req, res) => {

@@ -20,7 +20,7 @@ const generateOTP = require('../util/OTP').generateOTP;
 const setExpirationTime = require('../util/OTP').setExpirationTime;
 const sendOTPEmail = require('../util/OTP').sendOTPEmail;
 const JWT_SECRET = process.env.JWT_SECRET;
-exports.register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.register = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const otp = generateOTP();
         const otpExpiredAt = setExpirationTime();
