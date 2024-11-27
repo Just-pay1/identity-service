@@ -16,13 +16,19 @@ exports.register = async (req: Request, res: Response,next:NextFunction) => {
         const otpExpiredAt = setExpirationTime();
         const { name, email, password, phone } = req.body;
         const hashedPassword = await bcrypt.hash(password, 10);
+
         const user = new User({ name, email, phone, password: hashedPassword, otp, otp_expired_at: otpExpiredAt });
-        await sendOTPEmail(email, otp);
+        
+        // sendOTPEmail(email, otp);
+
         await user.save();
+        // res.send('here')
+
         const token = generateToken(user);
         res.status(200).json({ user, token });
-    } catch (error) {
-        res.status(500).json({ error: "Registration failed" });
+    } catch (error: any) {
+        console.error("Registration error:", error);
+        res.status(500).json({ error: "Registration failed", details: error.message });
     }
 };
 

@@ -18,7 +18,8 @@ app.use('/',authRoute);
 User.associate();
 Card.associate();
 
-sequelize.sync()
+// sequelize.sync()
+sequelize.sync({ alter: true })
     .then(() => {
         app.listen(PORT, () => {
             console.log(`Server is running on http://localhost:${PORT}`);
