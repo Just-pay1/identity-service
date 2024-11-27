@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import User from "../models/userModel";
 import { where } from "sequelize";
 require("dotenv").config();
@@ -10,7 +10,7 @@ const sendOTPEmail = require('../util/OTP').sendOTPEmail;
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-exports.register = async (req: Request, res: Response,next:NextFunction) => {
+exports.register = async (req: Request, res: Response) => {
     try {
         const otp = generateOTP();
         const otpExpiredAt = setExpirationTime();
