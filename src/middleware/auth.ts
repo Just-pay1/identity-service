@@ -10,21 +10,17 @@ declare module 'express' {
     }
 }
 
-const verifyToken: RequestHandler = (req: Request, res: Response, next: NextFunction): void => {
+function verifyToken(req: Request, res: Response, next: NextFunction) {
+  const secretKey = process.env.JWT_SECRET;
+  if (!secretKey) throw new Error('JWT secret key is missing');
   const authHeader = req.header('Authorization');
   const token = authHeader && authHeader.split(' ')[1]; // Extract token from Bearer <token>
-  
-  if (!token) { 
-    res.status(401).json({ error: 'Access denied' });
-    return;
-  }
-  if (!JWT_ACCESS_SECRET) {
-    throw new Error('JWT_SECRET is not defined in environment variables');
-  }
+
+  if (!token) return res.status(401).json({ error: 'Access denied' });
 
   try {
-    const decoded = jwt.verify(token, JWT_ACCESS_SECRET) as JwtPayload;
-    req.userId = decoded.id;
+    const decoded = jwt.verify(token, secretKey) as { userId: string };
+    req.userId = decoded.userId;
     next();
   } catch (error) {
     res.status(401).json({ error: 'Invalid token' });
