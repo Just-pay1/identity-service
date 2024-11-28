@@ -29,7 +29,7 @@ exports.register = async (req: Request, res: Response) => {
 
         const user = new User({ name, email, phone, password: hashedPassword, otp, otp_expired_at: otpExpiredAt });
         
-        // sendOTPEmail(email, otp);
+        await sendOTPEmail(email, otp);
 
         await user.save();
         // res.send('here')

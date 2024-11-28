@@ -14,7 +14,7 @@ exports.setExpirationTime = () => {
 exports.sendOTPEmail = async (email: any, otp: string) => {
     var transport = nodemailer.createTransport({
         host: "sandbox.smtp.mailtrap.io",
-        port: 2525,
+        port: 587,
         auth: {
             user: mailtrapUser,
             pass: mailtrapPassword
@@ -22,9 +22,9 @@ exports.sendOTPEmail = async (email: any, otp: string) => {
     });
 
     const mailOptions = {
-        from: 'youssefmoghazy55@gmail.com',
+        from: 'justPay@gmail.com',
         to: email,
-        subject: 'Your OTP Code',
+        subject: 'justPay - OTP Code',
         text: `Your OTP code is ${otp}.`,
     };
 
