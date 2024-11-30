@@ -49,9 +49,11 @@ User.init({
     },
     otp: {
         type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
     },
     otp_expired_at: {
         type: sequelize_1.DataTypes.DATE,
+        allowNull: true,
     },
 }, {
     sequelize: database_1.default,

@@ -3,18 +3,13 @@ require("dotenv").config();
 
 const mailtrapUser = process.env.MAIL_TRAP_USER;
 const mailtrapPassword = process.env.MAIL_TRAP_PASSWORD;
-exports.generateOTP = () => Math.floor(1000 + Math.random() * 9000).toString();
+const mailtrapPort = process.env.MAIL_TRAP_PORT
 
-exports.setExpirationTime = () => {
-    const expiration = new Date();
-    expiration.setMinutes(expiration.getMinutes() + 15); // OTP valid for 15 minutes
-    return expiration;
-};
 
 exports.sendOTPEmail = async (email: any, otp: string) => {
     var transport = nodemailer.createTransport({
         host: "sandbox.smtp.mailtrap.io",
-        port: 587,
+        port: mailtrapPort,
         auth: {
             user: mailtrapUser,
             pass: mailtrapPassword

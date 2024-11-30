@@ -10,8 +10,8 @@ const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 const ACCESS_TOKEN_LIFETIME = process.env.ACCESS_TOKEN_LIFETIME;
 const REFRESH_TOKEN_LIFETIME = process.env.REFRESH_TOKEN_LIFETIME;
-const generateOTP = require('../util/OTP').generateOTP;
-const setExpirationTime = require('../util/OTP').setExpirationTime;
+const generateOTP = require('../controller/OtpController').generateOTP;
+const setExpirationTime = require('../controller/OtpController').setExpirationTime;
 const sendOTPEmail = require('../util/OTP').sendOTPEmail;
 
 
@@ -28,7 +28,7 @@ exports.register = async (req: Request, res: Response) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = new User({ name, email, phone, password: hashedPassword, otp, otp_expired_at: otpExpiredAt });
-        
+
         await sendOTPEmail(email, otp);
 
         await user.save();
@@ -36,7 +36,8 @@ exports.register = async (req: Request, res: Response) => {
 
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
-        res.status(200).json({ user, accessToken, refreshToken });  
+        res.set('Authorization', `Bearer ${accessToken}`);
+        res.status(200).json({ user, refreshToken });
     } catch (error: any) {
         console.error("Registration error:", error);
         res.status(500).json({ error: "Registration failed", details: error.message });
@@ -46,11 +47,11 @@ exports.register = async (req: Request, res: Response) => {
 exports.login = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({where :{ email}});
+        const user = await User.findOne({ where: { email } });
         if (!user) {
             return res.status(401).json({ error: 'Authentication failed' });
         }
-      
+
         // res.send(await bcrypt.compare(password, user.password))
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
@@ -63,15 +64,15 @@ exports.login = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ error: 'Login failed' });
     }
-  
+
 }
 
-exports.refreshToken = async (req : Request, res: Response) => {
-    const { refreshToken} = req.body;
+exports.refreshToken = async (req: Request, res: Response) => {
+    const { refreshToken } = req.body;
     if (!refreshToken) return res.status(401).json({ error: 'Refresh token required' });
 
-    try{
-        const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as {id : string};
+    try {
+        const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as { id: string };
         const user = await User.findByPk(decoded.id)
         if (!user) return res.status(401).json({ error: 'Invalid refresh token' });
         const newAccessToken = generateAccessToken(user);
@@ -81,16 +82,16 @@ exports.refreshToken = async (req : Request, res: Response) => {
     }
 }
 
-const generateAccessToken = (user : any) => {
+const generateAccessToken = (user: any) => {
     return jwt.sign({ id: user.id }, JWT_ACCESS_SECRET, { expiresIn: ACCESS_TOKEN_LIFETIME });
 }
-const generateRefreshToken = (user : any) => {
+const generateRefreshToken = (user: any) => {
     return jwt.sign({ id: user.id }, JWT_REFRESH_SECRET, { expiresIn: REFRESH_TOKEN_LIFETIME });
 }
 
-const isEmailUnique = async(email : string) => {
-    const user = await User.findOne({ 
-        where: { email: email}
+const isEmailUnique = async (email: string) => {
+    const user = await User.findOne({
+        where: { email: email }
     });
     return !user;
 }
