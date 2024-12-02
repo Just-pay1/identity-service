@@ -1,10 +1,12 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
+
 import { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 
 dotenv.config(); 
 
 // Extend the Express Request object to include `userId`
+
 declare module 'express' {
   export interface Request {
     userId?: string; 

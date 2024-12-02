@@ -8,3 +8,4 @@ const router = express.Router();
 router.get('/profile', authMiddleware, getUserProfile);
 
 module.exports = router;
+
