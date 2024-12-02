@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+
 exports.generateOTP = () => Math.floor(100000 + Math.random() * 999999).toString();
 
 exports.setExpirationTime = () => {
@@ -7,8 +8,11 @@ exports.setExpirationTime = () => {
     return expiration;
 };
 
+
 export const getUserProfile = (req: Request, res: Response) => {
 
     res.json(req.userId)
 
+
 };
+

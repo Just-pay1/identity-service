@@ -1,12 +1,16 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { NextFunction, Request, Response } from 'express';
+
+import { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config(); 
+
+// Extend the Express Request object to include `userId`
+
 declare module 'express' {
-    export interface Request {
-      userId?: string; 
-    }
+  export interface Request {
+    userId?: string; 
+  }
 }
 
 const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
