@@ -20,11 +20,11 @@ app.use('/cards', cardRoute);
 app.use('/', authRoute);
 userModel_1.default.associate();
 cardModel_1.default.associate();
-// sequelize.sync()
-database_1.default.sync({ alter: true })
+database_1.default.sync()
+    //sequelize.sync({ alter: true })
     .then(() => {
-    app.listen(3001, () => {
-        console.log(`Server is running on http://localhost:${3001}`);
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
     });
 })
     .catch((err) => {
