@@ -11,6 +11,8 @@ class User extends Model {
     public email!: string;
     public password!: string;
     public phone!: string;
+    public otp!: string | null;
+    public otp_expired_at!: Date | null;
 
     static associate() {
         User.hasMany(Card, { foreignKey: 'user_id' });
