@@ -8,7 +8,7 @@ import { validate } from "../middleware/validation";
 const router = express.Router();
 
 // Protected route
-router.get('/verifyOTP',validate(OtpSchema), authMiddleware, OtpController.verifyOtp);
+router.post('/verifyOTP',validate(OtpSchema), authMiddleware, OtpController.verifyOtp);
 
 module.exports = router;
 

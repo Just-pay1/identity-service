@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import User from '../models/userModel';
 const bcrypt = require('bcrypt');
 
-exports.generateOTP = () => Math.floor(100000 + Math.random() * 999999).toString();
+exports.generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 exports.setExpirationTime = () => {
     const expiration = new Date();
