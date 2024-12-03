@@ -138,10 +138,10 @@ const isEmailUnique = async(email : string) => {
             return true;
         }
         if(user.otp !== null ) {
-            user.destroy();
+            await user.destroy();
             return true;
         }
-        
+
         return false;
     } catch (error) {
         console.error('Error checking email uniqueness:', error);
