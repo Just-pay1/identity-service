@@ -130,10 +130,25 @@ const generateRefreshToken = (user : any) => {
 }
 
 const isEmailUnique = async(email : string) => {
-    const user = await User.findOne({ 
-        where: { email: email}
-    });
-    return !user;
+    try {
+        const user = await User.findOne({ 
+            where: { email: email}
+        });
+        if (!user) {
+            return true;
+        }
+        if(user.otp !== null ) {
+            user.destroy();
+            return true;
+        }
+        
+        return false;
+    } catch (error) {
+        console.error('Error checking email uniqueness:', error);
+        throw new Error('Failed to check email uniqueness');
+    }
+    
+    
 }
 
 
