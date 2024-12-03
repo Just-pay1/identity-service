@@ -109,12 +109,12 @@ exports.login = async (req: Request, res: Response) => {
 
 exports.refreshToken = async (req : Request, res: Response) => {
     const { refreshToken} = req.body;
-    if (!refreshToken) return res.status(401).json({ error: 'Refresh token required' });
+    if (!refreshToken) return res.status(402).json({ error: 'Refresh token required' });
 
     try{
         const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as {id : string};
         const user = await User.findByPk(decoded.id)
-        if (!user) return res.status(401).json({ error: 'Invalid refresh token' });
+        if (!user) return res.status(402).json({ error: 'Invalid refresh token' });
         const newAccessToken = generateAccessToken(user);
         res.status(200).json({ accessToken: newAccessToken });
     } catch (error) {
