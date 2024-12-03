@@ -25,7 +25,7 @@ exports.register = async (req: Request, res: Response) => {
         const { name, email, password, phone } = req.body;
         const unique = await isEmailUnique(email)
         if (!unique) {
-            res.status(409).json({ error: 'This email address is already registered. Please use a different email or log in.' });
+            return res.status(409).json({ error: 'This email address is already registered. Please use a different email or log in.' });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const otp_hashed = await bcrypt.hash(otp, 10);
@@ -37,9 +37,9 @@ exports.register = async (req: Request, res: Response) => {
 
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
-        res.status(200).json({ user, accessToken, refreshToken });   
+        return res.status(200).json({ user, accessToken, refreshToken });   
     } catch (error) {
-        res.status(500).json({ error: 'Registration failed' });
+        return res.status(500).json({ error: 'Registration failed' });
     }
 }
 
