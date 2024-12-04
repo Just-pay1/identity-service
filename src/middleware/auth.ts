@@ -23,7 +23,7 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction): void =
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    res.status(401).json({ error: 'Access denied. No token provided.' });
+    res.status(402).json({ error: 'Access denied. No token provided.' });
     return;
   }
 
@@ -33,7 +33,7 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction): void =
     console.log(decoded.id); 
     next(); 
   } catch (error) {
-    res.status(401).json({ error: 'Invalid or expired token.' });
+    res.status(402).json({ error: 'Invalid or expired token.' });
   }
 };
 
