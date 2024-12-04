@@ -23,10 +23,10 @@ exports.verifyOtp = async(req: Request, res: Response) => {
             return res.status(401).json({ error: 'OTP expired or invalid. Please request a new one.' });
         }
         const isOtpCorrect = await bcrypt.compare(otp, user.otp);
-        if (isOtpCorrect) { // Correct comparison for matching OTP
-            user.otp = null; // Clear the OTP
-            user.otp_expired_at = null; // Clear the OTP
-            await user.save(); // Save the user to update the database
+        if (isOtpCorrect) {
+            user.otp = null;
+            user.otp_expired_at = null; 
+            await user.save(); 
             return res.status(200).json({ message: 'OTP verified successfully' });
         }
         return res.status(401).json({ error: 'Invalid OTP' });
