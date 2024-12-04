@@ -27,9 +27,9 @@ exports.register = async (req: Request, res: Response) => {
         if (!unique) {
             return res.status(409).json({ error: 'This email address is already registered. Please use a different email or log in.' });
         }
-        const hashedPassword = await bcrypt.hash(password, 10);
+
         const otp_hashed = await bcrypt.hash(otp, 10);
-        const user = new User({ name, email, phone, password: hashedPassword, otp: otp_hashed, otp_expired_at: otpExpiredAt });
+        const user = new User({ name, email, phone, password, otp: otp_hashed, otp_expired_at: otpExpiredAt });
 
         await sendOTPEmail(email, otp);
 
