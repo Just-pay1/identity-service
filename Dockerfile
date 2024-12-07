@@ -12,6 +12,10 @@ RUN npm install -g typescript
 
 RUN npm install express
 
+RUN npm install -g nodemon
+
+RUN npm update
+
 RUN tsc
 
 EXPOSE 3000
