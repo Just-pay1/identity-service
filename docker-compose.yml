@@ -1,0 +1,56 @@
+services:
+  app:
+    container_name: nodeappcontainer
+    build: .
+    image: nodeapp:v1
+    ports:
+      - "3000:3000"
+    expose:
+      - "3000"
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_DIALECT: ${DB_DIALECT}
+      DB_CONNECTION_LIMIT: 10
+      SERVER_PORT: ${PORT}
+      DB_PORT: ${DB_PORT}
+    depends_on:
+      - mysql
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - mysql_data
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysqlcontainer
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    expose:
+      - "3307"
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysqldb
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      retries: 5
+      start_period: 10s
+      timeout: 20s
+    volumes:
+      - $HOME/mysql_data:/var/lib/mysql
+    networks:
+      - mysql_data
+
+networks:
+  mysql_data:
+    driver: bridge
