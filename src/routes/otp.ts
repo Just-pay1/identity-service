@@ -9,6 +9,7 @@ const router = express.Router();
 
 // Protected route
 router.post('/verifyOTP',validate(OtpSchema), authMiddleware, OtpController.verifyOtp);
+router.post('/resendOTP', authMiddleware, OtpController.resendOtp);
 
 module.exports = router;
 
