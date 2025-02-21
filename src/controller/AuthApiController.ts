@@ -11,37 +11,52 @@ const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 const ACCESS_TOKEN_LIFETIME = process.env.ACCESS_TOKEN_LIFETIME;
 const REFRESH_TOKEN_LIFETIME = process.env.REFRESH_TOKEN_LIFETIME;
 
+import OTPService from "../services/otpService";
+const sendOTPEmail = require('../util/OTP').sendOTPEmail;
+
+
+
+
 exports.register = async (req: Request, res: Response) => {
     try {
+        const otp = OTPService.generateOTP();
+        const otpExpiredAt = OTPService.setExpirationTime();
         const { name, email, password, phone } = req.body;
         const unique = await isEmailUnique(email)
         if (!unique) {
-            res.status(409).json({ error: 'This email address is already registered. Please use a different email or log in.' });
+            return res.status(409).json({ error: 'This email address is already registered. Please use a different email or log in.' });
         }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ name, email, phone, password });
+
+        const otp_hashed = await bcrypt.hash(otp, 10);
+        const user = new User({ name, email, phone, password, otp: otp_hashed, otp_expired_at: otpExpiredAt });
+
+        await sendOTPEmail(email, otp);
+
         await user.save();
+
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
-        res.status(200).json({ user, accessToken, refreshToken });   
+        return res.status(200).json({ user, accessToken, refreshToken });   
     } catch (error) {
-        res.status(500).json({ error: 'Registration failed' });
+        return res.status(500).json({ error: 'Registration failed' });
     }
 }
+
+
 
 
 exports.login = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
-        const user = await User.findOne({where :{ email}});
+        const user = await User.findOne({ where: { email } });
         if (!user) {
-            return res.status(401).json({ error: 'Authentication failed' });
+            return res.status(401).json({ error: 'Invalid Email or Password' });
         }
-      
+
         // res.send(await bcrypt.compare(password, user.password))
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
-            return res.status(401).json({ error: 'Authentication failed' });
+            return res.status(401).json({ error: 'Invalid Email or Password' });
         }
 
         const accessToken = generateAccessToken(user);
@@ -50,21 +65,23 @@ exports.login = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ error: 'Login failed' });
     }
-  
+
 }
+
+
 
 exports.refreshToken = async (req : Request, res: Response) => {
     const { refreshToken} = req.body;
-    if (!refreshToken) return res.status(401).json({ error: 'Refresh token required' });
+    if (!refreshToken) return res.status(402).json({ error: 'Refresh token required' });
 
     try{
         const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as {id : string};
         const user = await User.findByPk(decoded.id)
-        if (!user) return res.status(401).json({ error: 'Invalid refresh token' });
+        if (!user) return res.status(402).json({ error: 'Invalid refresh token' });
         const newAccessToken = generateAccessToken(user);
         res.status(200).json({ accessToken: newAccessToken });
     } catch (error) {
-        res.status(401).json({ error: 'Invalid or expired refresh token' });
+        res.status(402).json({ error: 'Invalid or expired refresh token' });
     }
 }
 
@@ -76,59 +93,91 @@ const generateRefreshToken = (user : any) => {
 }
 
 const isEmailUnique = async(email : string) => {
-    const user = await User.findOne({ 
-        where: { email: email}
-    });
-    return !user;
+    try {
+        const user = await User.findOne({ 
+            where: { email: email}
+        });
+        if (!user) {
+            return true;
+        }
+        if(user.otp !== null ) {
+            await user.destroy();
+            return true;
+        }
+
+        return false;
+    } catch (error) {
+        console.error('Error checking email uniqueness:', error);
+        throw new Error('Failed to check email uniqueness');
+    }
+    
+    
+}
+
+exports.forgetPassword = async (req: Request, res: Response) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ where: { email } });
+
+        if (!user) {
+            return res.status(401).json({ error: 'User not found' });
+        }
+
+        // Generate OTP
+        const otp = OTPService.generateOTP();
+        const otpExpiredAt = OTPService.setExpirationTime();
+        const otp_hashed = await bcrypt.hash(otp, 10);
+
+        // Save OTP in user record
+        await user.update({ otp: otp_hashed, otp_expired_at: otpExpiredAt });
+
+        // Send OTP to email
+        await sendOTPEmail(user.email, otp);
+
+        return res.status(200).json({ message: 'OTP sent successfully for password reset' });
+
+    } catch (error) {
+        console.error('Error in forgetPassword:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.resetPassword = async (req: Request, res: Response) => {
+
+
+    const userId = req.userId;   
+    const {newPassword, confirmedPassword} = req.body;
+
+    try {
+        if (newPassword !== confirmedPassword) {
+            return res.status(400).json({ error: "Passwords do not match" });
+        }
+        const user = await User.findOne({where :{id : userId}});
+     
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        const passwordMatch = await bcrypt.compare(newPassword, user.password);
+        if (passwordMatch) {
+            return res.status(400).json({ error: "New password must be different to the old password" });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        user.update({ password: hashedPassword});
+
+        return res.status(200).json({ message: "Password updated successfully" });
+    } catch (err) {
+        return res.status(500).json({ error: "Something went wrong" });
+    }
+    
+
 }
 
 
-// const express = require('express');
-// const jwt = require('jsonwebtoken');
 
-// const app = express();
-// app.use(express.json()); // Middleware to parse JSON request bodies
 
-// const REFRESH_TOKEN_SECRET = 'your-refresh-token-secret'; // Replace with your actual refresh token secret
-// const ACCESS_TOKEN_SECRET = 'your-access-token-secret'; // Replace with your actual access token secret
-
-// app.post("/refresh", (req, res) => {
-//   const oldToken = req.body.refreshToken; // Get the refresh token from the request body
-
-//   if (!oldToken) {
-//     return res.status(406).json({
-//       success: false,
-//       message: "Unauthorized",
-//     });
-//   }
-
-//   jwt.verify(oldToken, REFRESH_TOKEN_SECRET, (err, decoded) => {
-//     if (err) {
-//       // Invalid token
-//       return res.status(406).json({
-//         success: false,
-//         message: "Unauthorized",
-//       });
+//     } catch (error: any) {
+//         console.error("Registration error:", error);
+//         res.status(500).json({ error: "Registration failed", details: error.message });
 //     }
-
-//     const userId = decoded.id;
-
-//     // Token is valid, send a new access token
-//     const accessToken = jwt.sign({ id: userId }, ACCESS_TOKEN_SECRET, {
-//       expiresIn: "1m",
-//     });
-
-//     return res.json({
-//       success: true,
-//       data: {
-//         accessToken,
-//       },
-//     });
-//   });
-// });
-
-// const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => {
-//   console.log(`Server is running on port ${PORT}`);
-// });
-
