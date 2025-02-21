@@ -1,61 +1,81 @@
 import { Request, Response } from 'express';
 import User from '../models/userModel';
 const bcrypt = require('bcrypt');
+import jwt from 'jsonwebtoken';
+import OTPService from "../services/otpService";
+require('dotenv').config();
+
 const sendOTPEmail = require('../util/OTP').sendOTPEmail;
+const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'fallback_secret';
 
-exports.generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+exports.verifyOtp = async (req: Request, res: Response) => {
+    try {
+        const { email, otp, flow } = req.body;
+        console.log("Request body:", req.body);
 
-exports.setExpirationTime = () => {
-    const expiration = new Date();
-    expiration.setMinutes(expiration.getMinutes() + 15); // OTP valid for 15 minutes
-    return expiration;
-};
-
-
-exports.verifyOtp = async(req: Request, res: Response) => {
-    try{
-        const otp = req.body.otp;
-        const user = await User.findOne({ where: { id: req.userId } });
+        const user = await User.findOne({ where: { email } });
         if (!user) {
             return res.status(401).json({ error: 'User not found' });
         }
- 
+
+        // Check OTP expiration
         if (!user.otp || !user.otp_expired_at || user.otp_expired_at.getTime() < Date.now()) {
             return res.status(401).json({ error: 'OTP expired or invalid. Please request a new one.' });
         }
+
+        // Compare OTP
         const isOtpCorrect = await bcrypt.compare(otp, user.otp);
-        if (isOtpCorrect) {
-            user.otp = null;
-            user.otp_expired_at = null; 
-            await user.save(); 
-            return res.status(200).json({ message: 'OTP verified successfully' });
+        if (!isOtpCorrect) {
+            return res.status(401).json({ error: 'Invalid OTP' });
         }
-        return res.status(401).json({ error: 'Invalid OTP' });
+
+        // ✅ Handle Reset Password Flow
+        if (flow === 'reset_password') {
+            const resetToken = jwt.sign(
+                { id: user.id, email: user.email },
+                JWT_ACCESS_SECRET,
+                { expiresIn: '15m' } // Reset token expires in 15 min
+            );
+
+            // ✅ Clear OTP to prevent reuse
+            await user.update({ otp: null, otp_expired_at: null });
+
+            return res.status(200).json({ message: 'OTP verified. Use this token to reset your password.', resetToken });
+        }
+
+        // ✅ Handle Normal Register Flow
+        await user.update({ otp: null, otp_expired_at: null });
+
+        return res.status(200).json({ message: 'OTP verified successfully' });
     } catch (error) {
         console.error('Error verifying OTP:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-    
 };
 
 exports.resendOtp = async (req: Request, res: Response) => {
-    const otp = exports.generateOTP();
-    const otp_hashed = await bcrypt.hash(otp, 10);
-    const expiryTime = exports.setExpirationTime();
-    try{
-        const user = await User.findOne({ where: { id: req.userId } });
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ where: { email } });
+
         if (!user) {
-                return res.status(401).json({ error: 'User not found' });
+            return res.status(401).json({ error: 'User not found' });
         }
-    
-        user.otp = otp_hashed;
-        user.otp_expired_at = expiryTime;
-        await user.save();
+
+        const otp = OTPService.generateOTP();
+        const otpExpiredAt = OTPService.setExpirationTime();
+        const otp_hashed = await bcrypt.hash(otp, 10);
+
+        // Update OTP
+        await user.update({ otp: otp_hashed, otp_expired_at: otpExpiredAt });
+
+        // Send OTP via email
         await sendOTPEmail(user.email, otp);
-        return res.status(200).json({message: 'the OTP has been resent successfully'});
+        return res.status(200).json({ message: 'The OTP has been resent successfully' });
     } catch (error) {
         console.error('Error Resending OTP:', error);
         return res.status(500).json({ error: 'Internal server error' });
     }
-    
-}
+};
+
+
