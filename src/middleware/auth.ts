@@ -13,6 +13,7 @@ declare module 'express' {
   }
 }
 
+
 const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   const secretKey = process.env.JWT_ACCESS_SECRET;
   if (!secretKey) {
@@ -32,6 +33,7 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction): void =
     req.userId = decoded.id;
     console.log(decoded.id); 
     next(); 
+
   } catch (error) {
     res.status(402).json({ error: 'Invalid or expired token.' });
   }
