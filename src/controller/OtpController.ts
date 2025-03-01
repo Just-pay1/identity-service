@@ -11,11 +11,11 @@ const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'fallback_secret';
 exports.verifyOtp = async (req: Request, res: Response) => {
     try {
         const { email, otp, flow } = req.body;
-        console.log("Request body:", req.body);
+        // console.log("Request body:", req.body);
 
         const user = await User.findOne({ where: { email } });
         if (!user) {
-            return res.status(401).json({ error: 'User not found' });
+            return res.status(404).json({ error: 'User not found' });
         }
 
         // Check OTP expiration
@@ -40,7 +40,7 @@ exports.verifyOtp = async (req: Request, res: Response) => {
             // ✅ Clear OTP to prevent reuse
             await user.update({ otp: null, otp_expired_at: null });
 
-            return res.status(200).json({ message: 'OTP verified. Use this token to reset your password.', resetToken });
+            return res.status(221).json({ message: 'OTP verified. Use this token to reset your password.', resetToken });
         }
 
         // ✅ Handle Normal Register Flow

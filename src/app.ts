@@ -10,17 +10,19 @@ const userRoute = require('./routes/user')
 const cardRoute = require('./routes/card')
 const authRoute = require('./routes/auth')
 const otpRoute = require('./routes/otp')
+const walletConfRoute = require('./routes/walletConfRoutes')
 app.use(bodyParser.json()); // For JSON
 app.use(bodyParser.urlencoded({ extended: true })); // For form-encoded dataapp.use(express.json());
 
 app.use('/otp', otpRoute);
 app.use('/user', userRoute);
 app.use('/cards', cardRoute);
+app.use('/walletConfig', walletConfRoute);
 app.use('/', authRoute);
 
 
-User.associate();
-Card.associate();
+// User.associate();
+// Card.associate();
 
 
 // sequelize.sync({ alter: true })

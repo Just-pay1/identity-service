@@ -12,3 +12,11 @@ export const updateUserSchema = Joi.object({
     email: Joi.string().email(),
     phone: Joi.string(),
 }).unknown(false);
+export const addUsernameSchema = Joi.object({
+    username: Joi.string().alphanum().min(3).max(30),
+
+}).unknown(false);
+export const pincodeSchema = Joi.object({
+    pincode: Joi.string().length(6).pattern(/^\d+$/).required(),
+    
+}).unknown(false);

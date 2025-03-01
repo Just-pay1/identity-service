@@ -9,14 +9,17 @@ class User extends Model {
     public id!: number;
     public name!: string;
     public email!: string;
+    public username!: string;
     public password!: string;
     public phone!: string;
     public otp!: string | null;
     public otp_expired_at!: Date | null;
+    public pin_code!: string | null;
+    public pin_code_confirmation!: boolean | null;
 
-    static associate() {
-        User.hasMany(Card, { foreignKey: 'user_id' });
-    }
+    // static associate() {
+    //     User.hasMany(Card, { foreignKey: 'user_id' });
+    // }
 
 }
 
@@ -37,6 +40,11 @@ User.init(
             allowNull: false,
             unique: true,
         },
+        username: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            unique: true,
+        },
         password: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -54,6 +62,16 @@ User.init(
           type: DataTypes.DATE,
           allowNull: true,
 
+        },
+        pin_code: {
+            type: DataTypes.STRING,
+            allowNull: true,
+  
+        },
+        pin_code_confirmation: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+  
         },
     },
     {
