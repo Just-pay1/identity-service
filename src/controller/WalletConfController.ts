@@ -22,11 +22,13 @@ exports.addUsername = async ( req: Request, res: Response) => {
     try {
         const user_id = req.userId;
         const { username } = req.body;
+        console.log(username);
+
         const user = await User.findByPk(user_id);
         if (!user){
             return res.status(404).json({ message: "User not found"});
         }
-        user.update({username: username});
+        await user.update({username: username});
         return res.status(200).json({ message: "username added successfully"});
     }catch (err) {
         console.error("Error checking username:", err);
@@ -41,7 +43,7 @@ exports.addPinCode = async ( req: Request, res: Response) => {
         if (!user){
             return res.status(404).json({ message: "User not found"});
         }
-        user.update({pin_code: pin_code});
+        await user.update({pin_code: pin_code});
         return res.status(200).json({ message: "pin_code added successfully"});
     }catch (err) {
         console.error("Error checking username:", err);
@@ -62,7 +64,7 @@ exports.pinCodeConfirmation = async (req: Request, res: Response) => {
         if (pin_code !== pin_code_confirmed){
             return res.status(400).json({ message: "Pin code Mustmatch" });
         }
-        user.update({pin_code_confirmation: true}); 
+        await user.update({pin_code_confirmation: true}); 
         return res.status(200).json({ message:"pin code confirmed" });
     }catch (err) {
         console.error("Error checking username:", err);

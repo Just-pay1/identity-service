@@ -7,9 +7,9 @@ import { addUsernameSchema, pincodeSchema} from '../validations'
 
 const router = express.Router();
 
-router.get('/checkUsernameAvailability',authMiddleware, walletConf.checkUsernameAvailability);
+router.post('/checkUsernameAvailability',authMiddleware, walletConf.checkUsernameAvailability);
 
-router.post('/username',authMiddleware,validate(addUsernameSchema), walletConf.addUsername);
+router.post('/username',validate(addUsernameSchema), authMiddleware, walletConf.addUsername);
 router.post('/pinCode',authMiddleware, validate(pincodeSchema), walletConf.addPinCode);
 router.post('/confirmPinCode',authMiddleware, validate(pincodeSchema),walletConf.pinCodeConfirmation);
 
