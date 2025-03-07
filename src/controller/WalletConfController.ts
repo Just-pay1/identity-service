@@ -54,7 +54,7 @@ exports.addPinCode = async ( req: Request, res: Response) => {
 exports.pinCodeConfirmation = async (req: Request, res: Response) => {
     try {
         const user_id = req.userId;
-        const { pin_code_confirmed } = req.body;
+        const { pin_code :pin_code_confirmed } = req.body;
         const user = await User.findByPk(user_id);
         if (!user){
             return res.status(404).json({ message: "User not found"});

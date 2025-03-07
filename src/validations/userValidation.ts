@@ -19,6 +19,6 @@ export const addUsernameSchema = Joi.object({
 }).unknown(false);
 
 export const pincodeSchema = Joi.object({
-    pincode: Joi.string().length(6).pattern(/^\d+$/).required(),
+    pin_code: Joi.string().length(6).pattern(/^\d+$/).required(),
     
 }).unknown(false);
