@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/userModel";
+import eventEmitter from '../events/EventEmitter';
+import { Events } from '../events/eventTypes';
 
 exports.checkUsernameAvailability = async (req: Request, res: Response) =>{
     try {
@@ -65,7 +67,8 @@ exports.pinCodeConfirmation = async (req: Request, res: Response) => {
             return res.status(400).json({ message: "Pin code Mustmatch" });
         }
         await user.update({pin_code_confirmation: true}); 
-        return res.status(200).json({ message:"pin code confirmed" });
+        eventEmitter.emit(Events.CREATE_WALLET, user);
+        return res.status(200).json({ message:"pin code confirmed" , username: user.username});
     }catch (err) {
         console.error("Error checking username:", err);
         return res.status(500).json({ error: "Internal server error" });
