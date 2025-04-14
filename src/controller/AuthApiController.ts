@@ -85,9 +85,22 @@ exports.refreshToken = async (req : Request, res: Response) => {
     }
 }
 
-const generateAccessToken = (user : any) => {
-    return jwt.sign({ id: user.id }, JWT_ACCESS_SECRET, { expiresIn: ACCESS_TOKEN_LIFETIME });
+// const generateAccessToken = (user : any) => {
+//     return jwt.sign({ id: user.id }, JWT_ACCESS_SECRET, { expiresIn: ACCESS_TOKEN_LIFETIME });
+// }
+
+const generateAccessToken = (user: any) => {
+    return jwt.sign(
+        {
+            id: user.id,
+            key: "iss",         // custom claim: key
+   
+        },
+        JWT_ACCESS_SECRET,
+        { expiresIn: ACCESS_TOKEN_LIFETIME }
+    );
 }
+
 const generateRefreshToken = (user : any) => {
     return jwt.sign({ id: user.id }, JWT_REFRESH_SECRET, { expiresIn: REFRESH_TOKEN_LIFETIME });
 }
