@@ -90,16 +90,21 @@ exports.refreshToken = async (req : Request, res: Response) => {
 // }
 
 const generateAccessToken = (user: any) => {
+    console.log(user.id)
+
     return jwt.sign(
         {
-            id: user.id,
-            key: "iss",         // custom claim: key
-   
+            user_id: user.id ,
+            username: "static_username",
+            iss: "identity", // 👈 This must match the `key` in your Kong config
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 
         },
         JWT_ACCESS_SECRET,
-        { expiresIn: ACCESS_TOKEN_LIFETIME }
+        {
+            algorithm: "HS256"
+        }
     );
-}
+};
 
 const generateRefreshToken = (user : any) => {
     return jwt.sign({ id: user.id }, JWT_REFRESH_SECRET, { expiresIn: REFRESH_TOKEN_LIFETIME });
