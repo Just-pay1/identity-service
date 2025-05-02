@@ -20,10 +20,12 @@ exports.checkUsernameAvailability = async (req: Request, res: Response) =>{
 }
 
 exports.addUsername = async ( req: Request, res: Response) => {
+    console.log('heer')
     try {
         const user_id = req.userId;
+        // console.log(user_id)
         const { username } = req.body;
-        console.log(username);
+        // console.log(username);
 
         const user = await User.findByPk(user_id);
         if (!user){

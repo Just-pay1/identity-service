@@ -16,6 +16,7 @@ declare module 'express' {
 
 const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   const secretKey = process.env.JWT_ACCESS_SECRET;
+  // console.log('auth validat')
   if (!secretKey) {
     throw new Error('JWT_SECRET is missing. Please add it to your environment variables.');
   }
@@ -30,8 +31,9 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction): void =
 
   try {
     const decoded = jwt.verify(token, secretKey) as JwtPayload & { userId: string }; 
-    req.userId = decoded.id;
-    console.log(decoded.id); 
+    req.userId = decoded.user_id; 
+    // console.log(req.userId)
+    // console.log(decoded.id); 
     next(); 
 
   } catch (error) {

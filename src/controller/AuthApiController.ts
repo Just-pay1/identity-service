@@ -90,7 +90,7 @@ exports.refreshToken = async (req : Request, res: Response) => {
 // }
 
 const generateAccessToken = (user: any) => {
-    console.log(user.id)
+    // console.log(user.id)
 
     return jwt.sign(
         {

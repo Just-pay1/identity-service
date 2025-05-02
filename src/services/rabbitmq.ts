@@ -5,6 +5,7 @@ const sendMessage = async (queue: string, body: object) => {
     const connection = await amqp.connect(
       'amqps://rxqzasmp:eUcjQTY-vMjPRmn8EgeUMGtYN1u_sEnF@goose.rmq2.cloudamqp.com/rxqzasmp'
     );
+    console.log("connection is submitted")
     const channel = await connection.createChannel();
 
     await channel.assertQueue(queue, { durable: false });
