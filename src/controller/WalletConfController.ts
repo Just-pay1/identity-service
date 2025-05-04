@@ -68,7 +68,7 @@ exports.pinCodeConfirmation = async (req: Request, res: Response) => {
             return res.status(400).json({ message: "Pin code Mustmatch" });
         }
         await user.update({pin_code_confirmation: true}); 
-        await sendMessage('creating wallet', { userId: user.id, username: user.username });
+        await sendMessage('wallet_creation', { userId: user.id, username: user.username });
         return res.status(200).json({ message:"pin code confirmed" , username: user.username});
     }catch (err) {
         console.error("Error checking username:", err);
