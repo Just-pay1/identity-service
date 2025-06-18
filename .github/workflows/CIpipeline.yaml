@@ -36,6 +36,7 @@ jobs:
              --build-arg MAIL_TRAP_USER="${{ secrets.MAIL_TRAP_USER }}" \
              --build-arg MAIL_TRAP_PASSWORD="${{ secrets.MAIL_TRAP_PASSWORD }}" \
              --build-arg DB_ENV="${{ secrets.DB_ENV }}" \
+             --build-arg REFERENCE_SERVICE_URL="${{ secrets.REFERENCE_SERVICE_URL }}" \
              -t identity .
 
     - name: Tag Docker image
