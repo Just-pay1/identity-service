@@ -7,21 +7,24 @@ const express_1 = __importDefault(require("express"));
 const app = (0, express_1.default)();
 const bodyParser = require('body-parser');
 const database_1 = __importDefault(require("./database/database"));
-const userModel_1 = __importDefault(require("./models/userModel"));
-const cardModel_1 = __importDefault(require("./models/cardModel"));
 const PORT = process.env.PORT || 3000;
 const userRoute = require('./routes/user');
 const cardRoute = require('./routes/card');
 const authRoute = require('./routes/auth');
-app.use(bodyParser.json());
-app.use(express_1.default.json());
+const otpRoute = require('./routes/otp');
+const walletConfRoute = require('./routes/walletConfRoutes');
+app.use(bodyParser.json()); // For JSON
+app.use(bodyParser.urlencoded({ extended: true })); // For form-encoded dataapp.use(express.json());
+app.use('/otp', otpRoute);
 app.use('/user', userRoute);
 app.use('/cards', cardRoute);
+app.use('/walletConfig', walletConfRoute);
 app.use('/', authRoute);
-userModel_1.default.associate();
-cardModel_1.default.associate();
+// User.associate();
+// Card.associate();
+// sequelize.sync({ alter: true })
 database_1.default.sync()
-    //sequelize.sync({ alter: true })
+    // sequelize.sync()
     .then(() => {
     app.listen(PORT, () => {
         console.log(`Server is running on http://localhost:${PORT}`);

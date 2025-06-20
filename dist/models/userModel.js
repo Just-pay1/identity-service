@@ -14,14 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const database_1 = __importDefault(require("../database/database"));
-const cardModel_1 = __importDefault(require("./cardModel"));
 const bcrypt = require('bcrypt');
 class User extends sequelize_1.Model {
     static validateAsync(body) {
         throw new Error('Method not implemented.');
-    }
-    static associate() {
-        User.hasMany(cardModel_1.default, { foreignKey: 'user_id' });
     }
 }
 User.init({
@@ -39,6 +35,11 @@ User.init({
         allowNull: false,
         unique: true,
     },
+    username: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
+        unique: true,
+    },
     password: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
@@ -53,6 +54,14 @@ User.init({
     },
     otp_expired_at: {
         type: sequelize_1.DataTypes.DATE,
+        allowNull: true,
+    },
+    pin_code: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
+    },
+    pin_code_confirmation: {
+        type: sequelize_1.DataTypes.BOOLEAN,
         allowNull: true,
     },
 }, {

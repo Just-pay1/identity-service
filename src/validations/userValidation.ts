@@ -13,6 +13,17 @@ export const updateUserSchema = Joi.object({
     phone: Joi.string(),
 }).unknown(false);
 
+export const editInfoSchema = Joi.object({
+    name: Joi.string().alphanum().min(3).max(30).optional(),
+    email: Joi.string().email().optional(),
+    phone: Joi.string().optional(),
+}).unknown(false).min(1); // At least one field must be provided
+
+export const verifyEmailUpdateSchema = Joi.object({
+    verificationId: Joi.string().required(),
+    otp: Joi.string().length(6).pattern(/^\d+$/).required(),
+}).unknown(false);
+
 export const addUsernameSchema = Joi.object({
     username: Joi.string().alphanum().min(3).max(30).required(),
 
@@ -20,5 +31,5 @@ export const addUsernameSchema = Joi.object({
 
 export const pincodeSchema = Joi.object({
     pin_code: Joi.string().length(6).pattern(/^\d+$/).required(),
-    
+
 }).unknown(false);

@@ -2,17 +2,21 @@ import express from "express";
 const Auth = require('../controller/AuthApiController')
 import authMiddleware from "../middleware/auth";
 import { validate } from "../middleware/validation";
-import { createUserSchema, loginSchema, resetPasswordSchema, ForgetPasswordSchema} from '../validations'
+import { createUserSchema, loginSchema, resetPasswordSchema, ForgetPasswordSchema, editInfoSchema, verifyEmailUpdateSchema } from '../validations'
 
 const router = express.Router();
 
 
-router.post('/register',validate(createUserSchema), Auth.register)
+router.post('/register', validate(createUserSchema), Auth.register)
 
-router.post('/login', validate(loginSchema),Auth.login)
-router.post('/refreshToken',Auth.refreshToken)
-router.post('/forgetPassword', validate(ForgetPasswordSchema),Auth.forgetPassword)
-router.post('/resetPassword', validate(resetPasswordSchema), authMiddleware,Auth.resetPassword)
+router.post('/login', validate(loginSchema), Auth.login)
+router.post('/refreshToken', Auth.refreshToken)
+router.post('/forgetPassword', validate(ForgetPasswordSchema), Auth.forgetPassword)
+router.post('/resetPassword', validate(resetPasswordSchema), authMiddleware, Auth.resetPassword)
+
+// New endpoints for editing user information
+router.put('/edit_info', authMiddleware, validate(editInfoSchema), Auth.edit_info)
+router.post('/verify_email_update', validate(verifyEmailUpdateSchema), Auth.verify_email_update)
 
 router.get('/generate', (req, res) => {
     const crypto = require('crypto');

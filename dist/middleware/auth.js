@@ -4,21 +4,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-function verifyToken(req, res, next) {
-    const secretKey = process.env.JWT_SECRET;
-    if (!secretKey)
-        throw new Error('JWT secret key is missing');
-    const authHeader = req.header('Authorization');
-    const token = authHeader && authHeader.split(' ')[1]; // Extract token from Bearer <token>
-    if (!token)
-        return res.status(401).json({ error: 'Access denied' });
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const authMiddleware = (req, res, next) => {
+    const secretKey = process.env.JWT_ACCESS_SECRET;
+    // console.log('auth validat')
+    if (!secretKey) {
+        throw new Error('JWT_SECRET is missing. Please add it to your environment variables.');
+    }
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) {
+        res.status(402).json({ error: 'Access denied. No token provided.' });
+        return;
+    }
     try {
         const decoded = jsonwebtoken_1.default.verify(token, secretKey);
-        req.userId = decoded.userId;
+        req.userId = decoded.user_id;
+        // console.log(req.userId)
+        // console.log(decoded.id); 
         next();
     }
     catch (error) {
-        res.status(401).json({ error: 'Invalid token' });
+        res.status(402).json({ error: 'Invalid or expired token.' });
     }
-}
-exports.default = verifyToken;
+};
+exports.default = authMiddleware;
