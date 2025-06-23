@@ -73,6 +73,11 @@ User.init(
             allowNull: true,
   
         },
+        city: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: 'cairo'
+        },
     },
     {
         sequelize,

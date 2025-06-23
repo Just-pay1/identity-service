@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/userModel";
-import sendMessage from "../services/rabbitmq";
+// import sendMessage from "../services/rabbitmq";
+import RabbitMQ from "../util/rabbitmq";
 
 exports.checkUsernameAvailability = async (req: Request, res: Response) => {
   try {
@@ -56,6 +57,7 @@ exports.addPinCode = async (req: Request, res: Response) => {
 
 exports.pinCodeConfirmation = async (req: Request, res: Response) => {
   try {
+    const rabbitMQ = await RabbitMQ.getInstance(); 
     const user_id = req.userId;
     const { pin_code: pin_code_confirmed } = req.body;
     const user = await User.findByPk(user_id);
@@ -68,9 +70,10 @@ exports.pinCodeConfirmation = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Pin code Mustmatch" });
     }
     await user.update({ pin_code_confirmation: true });
-    await sendMessage("wallet_creation", {
-      userId: user.id,
-    });
+    // await sendMessage("wallet_creation", {
+    //   userId: user.id,
+    // });
+    rabbitMQ.pushInWalletCreationQueue({ userId: user.id })
     return res
       .status(200)
       .json({ message: "pin code confirmed", username: user.username });

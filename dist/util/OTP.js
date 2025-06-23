@@ -8,25 +8,39 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const nodemailer = require('nodemailer');
-require("dotenv").config();
-const mailtrapUser = process.env.MAIL_TRAP_USER;
-const mailtrapPassword = process.env.MAIL_TRAP_PASSWORD;
-const mailtrapPort = process.env.MAIL_TRAP_PORT;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const rabbitmq_1 = __importDefault(require("./rabbitmq"));
 exports.sendOTPEmail = (email, otp) => __awaiter(void 0, void 0, void 0, function* () {
-    var transport = nodemailer.createTransport({
-        host: "sandbox.smtp.mailtrap.io",
-        port: mailtrapPort,
-        auth: {
-            user: mailtrapUser,
-            pass: mailtrapPassword
-        }
-    });
-    const mailOptions = {
-        from: 'justPay@gmail.com',
+    const rabbitMq = yield rabbitmq_1.default.getInstance();
+    const mailObj = {
         to: email,
         subject: 'justPay - OTP Code',
-        text: `Your OTP code is ${otp}.`,
+        content: `Your OTP code is ${otp}.`
     };
-    yield transport.sendMail(mailOptions);
+    rabbitMq.sendMail(mailObj);
 });
+// const nodemailer = require('nodemailer');
+// require("dotenv").config();
+// const mailtrapUser = process.env.MAIL_TRAP_USER;
+// const mailtrapPassword = process.env.MAIL_TRAP_PASSWORD;
+// const mailtrapPort = process.env.MAIL_TRAP_PORT
+// exports.sendOTPEmail = async (email: any, otp: string) => {
+//     var transport = nodemailer.createTransport({
+//         host: "sandbox.smtp.mailtrap.io",
+//         port: mailtrapPort,
+//         auth: {
+//             user: mailtrapUser,
+//             pass: mailtrapPassword
+//         }
+//     });
+//     const mailOptions = {
+//         from: 'justPay@gmail.com',
+//         to: email,
+//         subject: 'justPay - OTP Code',
+//         text: `Your OTP code is ${otp}.`,
+//     };
+//     await transport.sendMail(mailOptions);
+// }

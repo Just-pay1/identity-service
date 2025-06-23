@@ -9,15 +9,16 @@ interface Iuser {
     name: string,
     email: string,
     password: string,
-    phone: string
+    phone: string,
+    city: string
 }
 
 exports.createUser = async (req: Request, res: Response) => {
     try {
-        const {name, email, password, phone }: Iuser = req.body as Iuser;
+        const {name, email, password, phone, city }: Iuser = req.body as Iuser;
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        const newUser = await User.create({ name, email, password: hashedPassword, phone });
+        const newUser = await User.create({ name, email, password: hashedPassword, phone, city });
 
         res.status(200).json({ message: 'User created successfully', newUser });
     } catch (error: any) {

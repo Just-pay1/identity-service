@@ -17,10 +17,10 @@ const userModel_1 = __importDefault(require("../models/userModel"));
 const bcrypt = require('bcrypt');
 exports.createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, email, password, phone } = req.body;
+        const { name, email, password, phone, city } = req.body;
         const salt = yield bcrypt.genSalt(10);
         const hashedPassword = yield bcrypt.hash(password, salt);
-        const newUser = yield userModel_1.default.create({ name, email, password: hashedPassword, phone });
+        const newUser = yield userModel_1.default.create({ name, email, password: hashedPassword, phone, city });
         res.status(200).json({ message: 'User created successfully', newUser });
     }
     catch (error) {

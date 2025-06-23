@@ -13,7 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const userModel_1 = __importDefault(require("../models/userModel"));
-const rabbitmq_1 = __importDefault(require("../services/rabbitmq"));
+// import sendMessage from "../services/rabbitmq";
+const rabbitmq_1 = __importDefault(require("../util/rabbitmq"));
 exports.checkUsernameAvailability = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username } = req.body;
@@ -65,6 +66,7 @@ exports.addPinCode = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.pinCodeConfirmation = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const rabbitMQ = yield rabbitmq_1.default.getInstance();
         const user_id = req.userId;
         const { pin_code: pin_code_confirmed } = req.body;
         const user = yield userModel_1.default.findByPk(user_id);
@@ -77,9 +79,10 @@ exports.pinCodeConfirmation = (req, res) => __awaiter(void 0, void 0, void 0, fu
             return res.status(400).json({ message: "Pin code Mustmatch" });
         }
         yield user.update({ pin_code_confirmation: true });
-        yield (0, rabbitmq_1.default)("wallet_creation", {
-            userId: user.id,
-        });
+        // await sendMessage("wallet_creation", {
+        //   userId: user.id,
+        // });
+        rabbitMQ.pushInWalletCreationQueue({ userId: user.id });
         return res
             .status(200)
             .json({ message: "pin code confirmed", username: user.username });

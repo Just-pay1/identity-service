@@ -10,6 +10,7 @@ exports.createUserSchema = joi_1.default.object({
     password: joi_1.default.string().min(8).max(30).required(),
     email: joi_1.default.string().email().required(),
     phone: joi_1.default.string().required(),
+    city: joi_1.default.string().required(),
 }).unknown(false);
 exports.updateUserSchema = joi_1.default.object({
     name: joi_1.default.string().alphanum().min(3).max(30),

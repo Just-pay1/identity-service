@@ -64,6 +64,11 @@ User.init({
         type: sequelize_1.DataTypes.BOOLEAN,
         allowNull: true,
     },
+    city: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'cairo'
+    },
 }, {
     sequelize: database_1.default,
     modelName: 'User',
