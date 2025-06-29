@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 import sequelize from './database/database';
 import User from './models/userModel';
 import Card from './models/cardModel';
+import RabbitMQ from "./util/rabbitmq";
 const PORT = process.env.PORT || 3000;
 
 const userRoute = require('./routes/user')
@@ -29,10 +30,11 @@ app.use('/', authRoute);
 
 sequelize.sync()
 
-// sequelize.sync()
+    // sequelize.sync()
     .then(() => {
-        app.listen(PORT, () => {
+        app.listen(PORT, async () => {
             console.log(`Server is running on http://localhost:${PORT}`);
+            const rabbitMQ = await RabbitMQ.getInstance()
         });
     })
     .catch((err: any) => {

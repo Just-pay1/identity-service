@@ -1,14 +1,15 @@
 import amqp, { Channel, ChannelModel, ConsumeMessage } from "amqplib";
 import dotenv from 'dotenv';
 import { EmailRequest } from "./shared-interfaces";
+import { RABBITMQ_IP, RABBITMQ_PORT, RABBITMQ_USERNAME, RABBITMQ_PASSWORD, MAILS_QUEUE, WALLET_CREATION_QUEUE } from "../config";
 
-dotenv.config();
-const RABBITMQ_IP = process.env.RABBITMQ_IP;
-const RABBITMQ_PORT = process.env.RABBITMQ_PORT;
-const RABBITMQ_USERNAME = process.env.RABBITMQ_USERNAME;
-const RABBITMQ_PASSWORD = process.env.RABBITMQ_PASSWORD;
-const MAILS_QUEUE = process.env.MAILS_QUEUE;
-const WALLET_CREATION_QUEUE = process.env.WALLET_CREATION_QUEUE;
+// dotenv.config();
+// const RABBITMQ_IP = process.env.RABBITMQ_IP;
+// const RABBITMQ_PORT = process.env.RABBITMQ_PORT;
+// const RABBITMQ_USERNAME = process.env.RABBITMQ_USERNAME;
+// const RABBITMQ_PASSWORD = process.env.RABBITMQ_PASSWORD;
+// const MAILS_QUEUE = process.env.MAILS_QUEUE;
+// const WALLET_CREATION_QUEUE = process.env.WALLET_CREATION_QUEUE;
 
 
 
@@ -31,6 +32,8 @@ class RabbitMQ {
 
     private async init(): Promise<void> {
         try {
+
+            console.log(RABBITMQ_IP, RABBITMQ_PORT, RABBITMQ_USERNAME, RABBITMQ_PASSWORD, MAILS_QUEUE)
             this.connection = await amqp.connect({
                 protocol: 'amqps',
                 hostname: RABBITMQ_IP || 'localhost',
