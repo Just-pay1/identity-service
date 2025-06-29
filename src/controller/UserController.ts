@@ -15,7 +15,7 @@ interface Iuser {
 
 exports.createUser = async (req: Request, res: Response) => {
     try {
-        const {name, email, password, phone, city }: Iuser = req.body as Iuser;
+        const { name, email, password, phone, city }: Iuser = req.body as Iuser;
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
         const newUser = await User.create({ name, email, password: hashedPassword, phone, city });
@@ -87,6 +87,43 @@ exports.deleteUser = async (req: Request, res: Response) => {
         }
 
         res.status(200).json({ message: 'User deleted successfully', deletedUser });
+
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+exports.searchUser = async (req: Request, res: Response) => {
+    try {
+        const { username } = req.body;
+        const authenticatedUserId = req.userId; // From auth middleware
+
+        // Find the user by username
+        const searchedUser = await User.findOne({
+            where: { username: username },
+            attributes: ['id', 'name', 'username'] // Only return safe fields
+        });
+
+        // If user not found
+        if (!searchedUser) {
+            return res.status(404).json({
+                error: "Not found user with this username."
+            });
+        }
+
+        // If authenticated user is searching for themselves
+        if (searchedUser.id.toString() === authenticatedUserId?.toString()) {
+            return res.status(400).json({
+                error: "You are searching for yourself."
+            });
+        }
+
+        // Return the found user (different user)
+        res.status(200).json({
+            id: searchedUser.id,
+            name: searchedUser.name
+            ,username: searchedUser.username
+        });
 
     } catch (error: any) {
         res.status(500).json({ message: error.message });

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.pincodeSchema = exports.addUsernameSchema = exports.verifyEmailUpdateSchema = exports.editInfoSchema = exports.updateUserSchema = exports.createUserSchema = void 0;
+exports.searchUserSchema = exports.pincodeSchema = exports.addUsernameSchema = exports.verifyEmailUpdateSchema = exports.editInfoSchema = exports.updateUserSchema = exports.createUserSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 exports.createUserSchema = joi_1.default.object({
     name: joi_1.default.string().alphanum().min(3).max(30).required(),
@@ -31,4 +31,7 @@ exports.addUsernameSchema = joi_1.default.object({
 }).unknown(false);
 exports.pincodeSchema = joi_1.default.object({
     pin_code: joi_1.default.string().length(6).pattern(/^\d+$/).required(),
+}).unknown(false);
+exports.searchUserSchema = joi_1.default.object({
+    username: joi_1.default.string().alphanum().min(3).max(30).required(),
 }).unknown(false);
