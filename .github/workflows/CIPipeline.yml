@@ -41,6 +41,12 @@ jobs:
              --build-arg MAIL_TRAP_USER="${{ secrets.MAIL_TRAP_USER }}" \
              --build-arg MAIL_TRAP_PASSWORD="${{ secrets.MAIL_TRAP_PASSWORD }}" \
              --build-arg DB_ENV="${{ secrets.DB_ENV }}" \
+             --build-arg RABBITMQ_IP="${{ secrets.RABBITMQ_IP }}" \
+             --build-arg RABBITMQ_PORT="${{ secrets.RABBITMQ_PORT }}" \
+             --build-arg RABBITMQ_USERNAME="${{ secrets.RABBITMQ_USERNAME }}" \
+             --build-arg RABBITMQ_PASSWORD="${{ secrets.RABBITMQ_PASSWORD }}" \
+             --build-arg MAILS_QUEUE="${{ secrets.MAILS_QUEUE }}" \
+             --build-arg WALLET_CREATION_QUEUE="${{ secrets.WALLET_CREATION_QUEUE }}" \
              -t identity .
 
     - name: Tag Docker image
