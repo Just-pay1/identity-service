@@ -14,8 +14,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.searchUserSchema = void 0;
 __exportStar(require("./userValidation"), exports);
 __exportStar(require("./authValidation"), exports);
 __exportStar(require("./authValidation"), exports);
 __exportStar(require("./otpValidation"), exports);
 __exportStar(require("./resetPasswordValidation"), exports);
+var userValidation_1 = require("./userValidation");
+Object.defineProperty(exports, "searchUserSchema", { enumerable: true, get: function () { return userValidation_1.searchUserSchema; } });
