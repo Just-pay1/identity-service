@@ -34,3 +34,7 @@ export const pincodeSchema = Joi.object({
     pin_code: Joi.string().length(6).pattern(/^\d+$/).required(),
 
 }).unknown(false);
+
+export const searchUserSchema = Joi.object({
+    username: Joi.string().alphanum().min(3).max(30).required(),
+}).unknown(false);

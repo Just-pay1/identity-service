@@ -19,3 +19,4 @@ __exportStar(require("./authValidation"), exports);
 __exportStar(require("./authValidation"), exports);
 __exportStar(require("./otpValidation"), exports);
 __exportStar(require("./resetPasswordValidation"), exports);
+__exportStar(require("./userValidation"), exports);

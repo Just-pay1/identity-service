@@ -85,3 +85,35 @@ exports.deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.status(500).json({ message: error.message });
     }
 });
+exports.searchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { username } = req.body;
+        const authenticatedUserId = req.userId; // From auth middleware
+        // Find the user by username
+        const searchedUser = yield userModel_1.default.findOne({
+            where: { username: username },
+            attributes: ['id', 'name', 'username'] // Only return safe fields
+        });
+        // If user not found
+        if (!searchedUser) {
+            return res.status(404).json({
+                error: "Not found user with this username."
+            });
+        }
+        // If authenticated user is searching for themselves
+        if (searchedUser.id.toString() === (authenticatedUserId === null || authenticatedUserId === void 0 ? void 0 : authenticatedUserId.toString())) {
+            return res.status(400).json({
+                error: "You are searching for yourself."
+            });
+        }
+        // Return the found user (different user)
+        res.status(200).json({
+            id: searchedUser.id,
+            name: searchedUser.name,
+            username: searchedUser.username
+        });
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
