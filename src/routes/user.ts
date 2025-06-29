@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/', userController.getAllUser);
 router.get('/:id', authMiddleware, userController.getUserById);
 router.post('/', validate(createUserSchema), userController.createUser);
-router.post('/search', authMiddleware, validate(searchUserSchema), userController.searchUser);
+router.post('/getUserByUsername', authMiddleware, validate(searchUserSchema), userController.searchUser);
 router.put('/:id', validate(updateUserSchema), userController.updateUser);
 router.delete('/:id', userController.deleteUser);
 
