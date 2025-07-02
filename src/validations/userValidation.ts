@@ -36,5 +36,6 @@ export const pincodeSchema = Joi.object({
 }).unknown(false);
 
 export const searchUserSchema = Joi.object({
-    username: Joi.string().alphanum().min(3).max(30).required(),
-}).unknown(false);
+    username: Joi.string().alphanum().min(3).max(30),
+    phone: Joi.string().pattern(/^\d{11}$/),
+}).or('username', 'phone').unknown(false);

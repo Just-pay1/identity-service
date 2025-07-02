@@ -33,5 +33,6 @@ exports.pincodeSchema = joi_1.default.object({
     pin_code: joi_1.default.string().length(6).pattern(/^\d+$/).required(),
 }).unknown(false);
 exports.searchUserSchema = joi_1.default.object({
-    username: joi_1.default.string().alphanum().min(3).max(30).required(),
-}).unknown(false);
+    username: joi_1.default.string().alphanum().min(3).max(30),
+    phone: joi_1.default.string().pattern(/^\d{11}$/),
+}).or('username', 'phone').unknown(false);
