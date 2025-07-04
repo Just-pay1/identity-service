@@ -54,24 +54,24 @@ User.init(
             allowNull: false,
         },
         otp: {
-          type: DataTypes.STRING,
-          allowNull: true,
+            type: DataTypes.STRING,
+            allowNull: true,
 
         },
         otp_expired_at: {
-          type: DataTypes.DATE,
-          allowNull: true,
+            type: DataTypes.DATE,
+            allowNull: true,
 
         },
         pin_code: {
             type: DataTypes.STRING,
             allowNull: true,
-  
+
         },
         pin_code_confirmation: {
             type: DataTypes.BOOLEAN,
             allowNull: true,
-  
+
         },
         city: {
             type: DataTypes.STRING,

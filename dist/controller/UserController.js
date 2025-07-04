@@ -87,31 +87,57 @@ exports.deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.searchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { username } = req.body;
+        const { username, phone } = req.body;
         const authenticatedUserId = req.userId; // From auth middleware
-        // Find the user by username
-        const searchedUser = yield userModel_1.default.findOne({
-            where: { username: username },
-            attributes: ['id', 'name', 'username'] // Only return safe fields
-        });
-        // If user not found
+        if (!username && !phone) {
+            return res.status(400).json({ error: "Please provide a username or phone number." });
+        }
+        let searchedUser = null;
+        let searchType = '';
+        if (phone) {
+            // Validate phone is exactly 11 digits (defensive, already in Joi)
+            if (!/^\d{11}$/.test(phone)) {
+                return res.status(400).json({ error: "Phone number must be exactly 11 digits." });
+            }
+            searchedUser = yield userModel_1.default.findOne({
+                where: { phone },
+                attributes: ['id', 'name', 'phone']
+            });
+            searchType = 'phone';
+        }
+        else if (username) {
+            searchedUser = yield userModel_1.default.findOne({
+                where: { username },
+                attributes: ['id', 'name', 'username']
+            });
+            searchType = 'username';
+        }
         if (!searchedUser) {
             return res.status(404).json({
-                error: "Not found user with this username."
+                error: "No user found with this username or phone number."
             });
         }
-        // If authenticated user is searching for themselves
+        // Prevent searching for yourself
         if (searchedUser.id.toString() === (authenticatedUserId === null || authenticatedUserId === void 0 ? void 0 : authenticatedUserId.toString())) {
             return res.status(400).json({
-                error: "You are searching for yourself."
+                error: "You cannot search for yourself."
             });
         }
         // Return the found user (different user)
-        res.status(200).json({
-            id: searchedUser.id,
-            name: searchedUser.name,
-            username: searchedUser.username
-        });
+        if (searchType === 'phone') {
+            return res.status(200).json({
+                id: searchedUser.id,
+                name: searchedUser.name,
+                phone: searchedUser.phone
+            });
+        }
+        else {
+            return res.status(200).json({
+                id: searchedUser.id,
+                name: searchedUser.name,
+                username: searchedUser.username
+            });
+        }
     }
     catch (error) {
         res.status(500).json({ message: error.message });
