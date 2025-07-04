@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import User from "../models/userModel";
 // import sendMessage from "../services/rabbitmq";
 import RabbitMQ from "../util/rabbitmq";
+const bcrypt = require('bcrypt');
 
 exports.checkUsernameAvailability = async (req: Request, res: Response) => {
   try {
@@ -47,7 +48,9 @@ exports.addPinCode = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    await user.update({ pin_code: pin_code });
+    const pin_code_hashed = await bcrypt.hash(pin_code, 10);
+
+    await user.update({ pin_code: pin_code_hashed });
     return res.status(200).json({ message: "pin_code added successfully" });
   } catch (err) {
     console.error("Error checking username:", err);
@@ -64,9 +67,10 @@ exports.pinCodeConfirmation = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    
     const pin_code = user.pin_code;
-    console.log(pin_code);
-    if (pin_code !== pin_code_confirmed) {
+
+    if (! await bcrypt.compare(pin_code_confirmed, pin_code)) {
       return res.status(400).json({ message: "Pin code Mustmatch" });
     }
     await user.update({ pin_code_confirmation: true });

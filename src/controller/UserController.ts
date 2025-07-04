@@ -101,7 +101,7 @@ exports.searchUser = async (req: Request, res: Response) => {
         if (!username && !phone) {
             return res.status(400).json({ error: "Please provide a username or phone number." });
         }
-
+        
         let searchedUser = null;
         let searchType = '';
 
@@ -127,6 +127,9 @@ exports.searchUser = async (req: Request, res: Response) => {
             return res.status(404).json({
                 error: "No user found with this username or phone number."
             });
+        }
+        if (!searchedUser.pin_code_confirmation) {
+            return res.status(400).json({ error: "the user is not confirmed" });
         }
 
         // Prevent searching for yourself

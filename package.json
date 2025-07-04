@@ -5,7 +5,8 @@
   "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && nodemon dist/app.js"
+    "start": "tsc && nodemon dist/app.js",
+    "seed:update-phones": "ts-node src/seeders/updatePhoneNumbers.ts"
   },
   "author": "",
   "license": "ISC",
