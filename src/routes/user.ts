@@ -1,5 +1,6 @@
 import express from "express";
 const userController = require('../controller/UserController')
+const authApiController = require('../controller/AuthApiController')
 import { createUserSchema, updateUserSchema, searchUserSchema } from '../validations'
 import { validate } from "../middleware/validation";
 import authMiddleware from "../middleware/auth";

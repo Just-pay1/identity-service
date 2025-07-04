@@ -2,7 +2,7 @@ import express from "express";
 const Auth = require('../controller/AuthApiController')
 import authMiddleware from "../middleware/auth";
 import { validate } from "../middleware/validation";
-import { createUserSchema, loginSchema, resetPasswordSchema, ForgetPasswordSchema, editInfoSchema, verifyEmailUpdateSchema } from '../validations'
+import { createUserSchema, loginSchema, resetPasswordSchema, ForgetPasswordSchema, editInfoSchema, verifyEmailUpdateSchema, changePasswordSchema } from '../validations'
 
 const router = express.Router();
 
@@ -25,4 +25,5 @@ router.get('/generate', (req, res) => {
     console.log(JWT_SECRET);
 })
 
+router.put('/changePassword', authMiddleware, validate(changePasswordSchema), Auth.changePassword)
 module.exports = router;

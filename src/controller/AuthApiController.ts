@@ -310,6 +310,28 @@ exports.verify_email_update = async (req: Request, res: Response) => {
     }
 };
 
+exports.changePassword = async (req: Request, res: Response) => {
+    const userId = req.userId;
+    const { oldPassword, newPassword, confirmedPassword } = req.body;
+    const user = await User.findOne({ where: { id: userId } });
+    const userPassword = user?.password;
+    const passwordMatch = await bcrypt.compare(oldPassword, userPassword);
+    if (!passwordMatch) {
+        return res.status(400).json({ error: "Old password is incorrect" });
+    }
+    if (newPassword === oldPassword) {
+        return res.status(400).json({ error: "New password must be different to the old password" });
+    }
+    if (newPassword !== confirmedPassword) {
+        return res.status(400).json({ error: "Passwords do not match" });
+    }
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    user?.update({ password: hashedPassword });
+    return res.status(200).json({ message: "Password updated successfully" });
+    
+}
+
 
 
 
