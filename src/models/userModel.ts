@@ -1,6 +1,5 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../database/database';
-import Card from './cardModel';
 const bcrypt = require('bcrypt');
 class User extends Model {
     static validateAsync(body: any) {

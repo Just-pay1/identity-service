@@ -3,14 +3,12 @@ const app = express();
 const bodyParser = require('body-parser');
 import sequelize from './database/database';
 import User from './models/userModel';
-import Card from './models/cardModel';
 import Request from './models/requestModel';
 import RabbitMQ from "./util/rabbitmq";
 import metricsRouter, { trackHttpRequests } from './routes/metrics';
 const PORT = process.env.PORT || 3000;
 
 const userRoute = require('./routes/user')
-const cardRoute = require('./routes/card')
 const authRoute = require('./routes/auth')
 const otpRoute = require('./routes/otp')
 const walletConfRoute = require('./routes/walletConfRoutes')
@@ -25,14 +23,12 @@ app.use(trackHttpRequests);
 app.use('/', metricsRouter);
 app.use('/otp', otpRoute);
 app.use('/user', userRoute);
-app.use('/cards', cardRoute);
 app.use('/walletConfig', walletConfRoute);
 app.use('/request', requestRoute);
 app.use('/', authRoute);
 
 
 // User.associate();
-// Card.associate();
 
 
 // sequelize.sync({ alter: true })
