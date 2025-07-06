@@ -16,10 +16,6 @@ class User extends Model {
     public pin_code!: string | null;
     public pin_code_confirmation!: boolean | null;
 
-    // static associate() {
-    //     User.hasMany(Card, { foreignKey: 'user_id' });
-    // }
-
 }
 
 

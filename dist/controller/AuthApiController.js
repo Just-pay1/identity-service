@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const userModel_1 = __importDefault(require("../models/userModel"));
-const metrics_1 = require("../routes/metrics");
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -26,52 +25,42 @@ const otpService_1 = __importDefault(require("../services/otpService"));
 const sendOTPEmail = require('../util/OTP').sendOTPEmail;
 exports.register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        metrics_1.authenticationAttempts.inc({ type: 'register', status: 'attempt' });
         const otp = otpService_1.default.generateOTP();
         const otpExpiredAt = otpService_1.default.setExpirationTime();
         const { name, email, password, phone } = req.body;
         const unique = yield isEmailUnique(email);
         if (!unique) {
-            metrics_1.authenticationAttempts.inc({ type: 'register', status: 'failed' });
             return res.status(409).json({ error: 'This email address is already registered. Please use a different email or log in.' });
         }
         const otp_hashed = yield bcrypt.hash(otp, 10);
         const user = new userModel_1.default({ name, email, phone, password, otp: otp_hashed, otp_expired_at: otpExpiredAt });
         yield sendOTPEmail(email, otp);
-        metrics_1.otpRequests.inc({ type: 'registration' });
         yield user.save();
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
-        metrics_1.authenticationAttempts.inc({ type: 'register', status: 'success' });
         return res.status(200).json({ user, accessToken, refreshToken });
     }
     catch (error) {
-        metrics_1.authenticationAttempts.inc({ type: 'register', status: 'error' });
         return res.status(500).json({ error: 'Registration failed' });
     }
 });
 exports.login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        metrics_1.authenticationAttempts.inc({ type: 'login', status: 'attempt' });
         const { email, password } = req.body;
         const user = yield userModel_1.default.findOne({ where: { email } });
         if (!user) {
-            metrics_1.authenticationAttempts.inc({ type: 'login', status: 'failed' });
             return res.status(401).json({ error: 'Invalid Email or Password' });
         }
         // res.send(await bcrypt.compare(password, user.password))
         const passwordMatch = yield bcrypt.compare(password, user.password);
         if (!passwordMatch) {
-            metrics_1.authenticationAttempts.inc({ type: 'login', status: 'failed' });
             return res.status(401).json({ error: 'Invalid Email or Password' });
         }
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
-        metrics_1.authenticationAttempts.inc({ type: 'login', status: 'success' });
         res.status(200).json({ user, accessToken, refreshToken });
     }
     catch (error) {
-        metrics_1.authenticationAttempts.inc({ type: 'login', status: 'error' });
         res.status(500).json({ error: 'Login failed' });
     }
 });
@@ -142,7 +131,6 @@ exports.forgetPassword = (req, res) => __awaiter(void 0, void 0, void 0, functio
         yield user.update({ otp: otp_hashed, otp_expired_at: otpExpiredAt });
         // Send OTP to email
         yield sendOTPEmail(user.email, otp);
-        metrics_1.otpRequests.inc({ type: 'password_reset' });
         return res.status(200).json({ message: 'OTP sent successfully for password reset' });
     }
     catch (error) {

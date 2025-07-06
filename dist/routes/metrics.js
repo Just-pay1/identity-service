@@ -21,7 +21,7 @@ const register = new client.Registry();
 exports.register = register;
 // Add a default label which is added to all metrics
 register.setDefaultLabels({
-    app: 'justpay-core-app'
+    app: 'justpay-identity-service'
 });
 // Enable the collection of default metrics
 client.collectDefaultMetrics({ register });

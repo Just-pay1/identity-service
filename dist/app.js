@@ -43,7 +43,6 @@ const rabbitmq_1 = __importDefault(require("./util/rabbitmq"));
 const metrics_1 = __importStar(require("./routes/metrics"));
 const PORT = process.env.PORT || 3000;
 const userRoute = require('./routes/user');
-const cardRoute = require('./routes/card');
 const authRoute = require('./routes/auth');
 const otpRoute = require('./routes/otp');
 const walletConfRoute = require('./routes/walletConfRoutes');
@@ -56,12 +55,10 @@ app.use(metrics_1.trackHttpRequests);
 app.use('/', metrics_1.default);
 app.use('/otp', otpRoute);
 app.use('/user', userRoute);
-app.use('/cards', cardRoute);
 app.use('/walletConfig', walletConfRoute);
 app.use('/request', requestRoute);
 app.use('/', authRoute);
 // User.associate();
-// Card.associate();
 // sequelize.sync({ alter: true })
 database_1.default.sync()
     // sequelize.sync()
