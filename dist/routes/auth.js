@@ -22,4 +22,5 @@ router.get('/generate', (req, res) => {
     const JWT_SECRET = crypto.randomBytes(32).toString('hex');
     console.log(JWT_SECRET);
 });
+router.put('/changePassword', auth_1.default, (0, validation_1.validate)(validations_1.changePasswordSchema), Auth.changePassword);
 module.exports = router;

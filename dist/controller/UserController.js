@@ -101,14 +101,14 @@ exports.searchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             }
             searchedUser = yield userModel_1.default.findOne({
                 where: { phone },
-                attributes: ['id', 'name', 'phone']
+                attributes: ['id', 'name', 'phone', 'pin_code_confirmation']
             });
             searchType = 'phone';
         }
         else if (username) {
             searchedUser = yield userModel_1.default.findOne({
                 where: { username },
-                attributes: ['id', 'name', 'username']
+                attributes: ['id', 'name', 'username', 'pin_code_confirmation']
             });
             searchType = 'username';
         }
@@ -116,6 +116,9 @@ exports.searchUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             return res.status(404).json({
                 error: "No user found with this username or phone number."
             });
+        }
+        if (!searchedUser.pin_code_confirmation) {
+            return res.status(400).json({ error: "the user is not confirmed" });
         }
         // Prevent searching for yourself
         if (searchedUser.id.toString() === (authenticatedUserId === null || authenticatedUserId === void 0 ? void 0 : authenticatedUserId.toString())) {

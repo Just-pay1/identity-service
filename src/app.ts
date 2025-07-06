@@ -6,6 +6,7 @@ import User from './models/userModel';
 import Card from './models/cardModel';
 import Request from './models/requestModel';
 import RabbitMQ from "./util/rabbitmq";
+import metricsRouter, { trackHttpRequests } from './routes/metrics';
 const PORT = process.env.PORT || 3000;
 
 const userRoute = require('./routes/user')
@@ -17,6 +18,11 @@ const requestRoute = require('./routes/request').default
 app.use(bodyParser.json()); // For JSON
 app.use(bodyParser.urlencoded({ extended: true })); // For form-encoded dataapp.use(express.json());
 
+// Add metrics tracking middleware
+app.use(trackHttpRequests);
+
+// Routes
+app.use('/', metricsRouter);
 app.use('/otp', otpRoute);
 app.use('/user', userRoute);
 app.use('/cards', cardRoute);

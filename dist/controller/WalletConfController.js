@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const userModel_1 = __importDefault(require("../models/userModel"));
 // import sendMessage from "../services/rabbitmq";
 const rabbitmq_1 = __importDefault(require("../util/rabbitmq"));
+const bcrypt = require('bcrypt');
 exports.checkUsernameAvailability = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { username } = req.body;
@@ -56,7 +57,8 @@ exports.addPinCode = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        yield user.update({ pin_code: pin_code });
+        const pin_code_hashed = yield bcrypt.hash(pin_code, 10);
+        yield user.update({ pin_code: pin_code_hashed });
         return res.status(200).json({ message: "pin_code added successfully" });
     }
     catch (err) {
@@ -74,8 +76,7 @@ exports.pinCodeConfirmation = (req, res) => __awaiter(void 0, void 0, void 0, fu
             return res.status(404).json({ message: "User not found" });
         }
         const pin_code = user.pin_code;
-        console.log(pin_code);
-        if (pin_code !== pin_code_confirmed) {
+        if (!(yield bcrypt.compare(pin_code_confirmed, pin_code))) {
             return res.status(400).json({ message: "Pin code Mustmatch" });
         }
         yield user.update({ pin_code_confirmation: true });

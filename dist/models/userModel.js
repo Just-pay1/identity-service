@@ -47,6 +47,7 @@ User.init({
     phone: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
+        unique: true,
     },
     otp: {
         type: sequelize_1.DataTypes.STRING,
