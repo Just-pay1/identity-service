@@ -36,7 +36,7 @@ exports.sendOTPEmail = async (email: any, otp: string) => {
 //         text: `Your OTP code is ${otp}.`,
 //     };
 
-    await transport.sendMail(mailOptions);
+    // await transport.sendMail(mailOptions);
 }
 
 
