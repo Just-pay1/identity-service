@@ -21,14 +21,14 @@ exports.register = async (req: Request, res: Response) => {
     try {
         const otp = OTPService.generateOTP();
         const otpExpiredAt = OTPService.setExpirationTime();
-        const { name, email, password, phone } = req.body;
+        const { name, email, password, phone, city } = req.body;
         const unique = await isEmailUnique(email)
         if (!unique) {
             return res.status(409).json({ error: 'This email address is already registered. Please use a different email or log in.' });
         }
 
         const otp_hashed = await bcrypt.hash(otp, 10);
-        const user = new User({ name, email, phone, password, otp: otp_hashed, otp_expired_at: otpExpiredAt });
+        const user = new User({ name, email, phone, password, otp: otp_hashed, otp_expired_at: otpExpiredAt, city });
 
         await sendOTPEmail(email, otp);
 
@@ -207,6 +207,15 @@ exports.edit_info = async (req: Request, res: Response) => {
         const user = await User.findOne({ where: { id: userId } });
         if (!user) {
             return res.status(404).json({ error: "User not found" });
+        }
+        if(name && name == user.name){
+            return res.status(400).json({ error: "Name is the same as the old name" });
+        }
+        if(phone && phone == user.phone){
+            return res.status(400).json({ error: "Phone is the same as the old phone" });
+        }
+        if(email && email == user.email){
+            return res.status(400).json({ error: "Email is the same as the old email" });
         }
 
         // Check if email is being updated

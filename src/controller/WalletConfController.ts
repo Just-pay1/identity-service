@@ -96,8 +96,8 @@ exports.verifyPinCode = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found" });
     }
     const pin_codeDB = user.pin_code;
-    if (pin_code !== pin_codeDB) {
-      return res.status(400).json({ message: "Pin code is incorrect" });
+    if (! await bcrypt.compare(pin_code, pin_codeDB)) {
+      return res.status(400).json({ message: "Pin code Mustmatch" });
     }
     return res.status(200).json({ message: "pin code correct" });
   } catch (err) {

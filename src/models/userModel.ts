@@ -72,7 +72,6 @@ User.init(
         city: {
             type: DataTypes.STRING,
             allowNull: false,
-            defaultValue: 'cairo'
         },
     },
     {
