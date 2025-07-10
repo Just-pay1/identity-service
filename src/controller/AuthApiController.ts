@@ -184,7 +184,7 @@ exports.resetPassword = async (req: Request, res: Response) => {
         const hashedPassword = await bcrypt.hash(newPassword, salt);
         user.update({ password: hashedPassword });
 
-        return res.status(200).json({ message: "Password updated successfully" });
+        return res.status(202).json({ message: "Password updated successfully" });
     } catch (err) {
         return res.status(500).json({ error: "Something went wrong" });
     }
