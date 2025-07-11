@@ -164,6 +164,7 @@ exports.resetPassword = async (req: Request, res: Response) => {
 
 
     const userId = req.userId;
+  
     const { newPassword, confirmedPassword } = req.body;
 
     try {
@@ -175,6 +176,7 @@ exports.resetPassword = async (req: Request, res: Response) => {
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
+    
         const passwordMatch = await bcrypt.compare(newPassword, user.password);
         if (passwordMatch) {
             return res.status(400).json({ error: "New password must be different to the old password" });
@@ -184,7 +186,7 @@ exports.resetPassword = async (req: Request, res: Response) => {
         const hashedPassword = await bcrypt.hash(newPassword, salt);
         user.update({ password: hashedPassword });
 
-        return res.status(202).json({ message: "Password updated successfully" });
+        return res.status(200).json({ message: "Password updated successfully" });
     } catch (err) {
         return res.status(500).json({ error: "Something went wrong" });
     }
